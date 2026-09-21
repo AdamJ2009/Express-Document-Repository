@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document Repository - New Document</title>
+</head>
+<body>
+  <a href="/" class="back-link">&larr; Back to Document List</a>
+  <h2>Add New Document</h2>
+
+  <form id="uploadForm">
+
+    <div class="form-group">
+      <label for="documentFile">Select File:</label>
+      <input type="file" id="documentFile" required />
+    </div>
+
+    <div class="form-group">
+      <label for="fileName">Custom File Name:</label>
+      <input type="text" id="fileName" name="fileName" placeholder="Enter custom file name (optional)" />
+    </div>
+
+    <div class="form-group">
+      <label for="importanceFlag">Importance Status:</label>
+      <select id="importanceFlag">
+        <option value="0">Not Important</option>
+        <option value="1">Important</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="archiveFlag">Archive Status:</label>
+      <select id="archiveFlag">
+        <option value="0">Active (0)</option>
+        <option value="1">Archived (1)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="accessFlag">Access Level (0-2):</label>
+      <input type="number" id="accessFlag" min="0" max="2" value="0" required />
+    </div>
+
+    <button type="submit">Upload Document</button>
+  </form>
+
+  <div id="status"></div>
+
+  <script src="/new.js"></script>
+</body>
+</html>

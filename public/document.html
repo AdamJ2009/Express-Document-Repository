@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document Details</title>
+</head>
+<body>
+  <a href="/" class="back-link">&larr; Back to Document List</a>
+  <h2>Document Details</h2>
+
+  <div id="loading">Loading document details...</div>
+
+  <div id="documentDetails" style="display: none;">
+    <p><strong>ID:</strong> <span id="docId"></span></p>
+    <p><strong>File Name:</strong> <span id="fileName"></span></p>
+    <p><strong>Importance:</strong> <span id="importanceFlag"></span></p>
+    <p><strong>Archive Status:</strong> <span id="archiveFlag"></span></p>
+    <p><strong>Access Level:</strong> <span id="accessFlag"></span></p>
+    <p><strong>Created At:</strong> <span id="createdAt"></span></p>
+    <p><strong>Updated At:</strong> <span id="updatedAt"></span></p>
+    <p><strong>History Ref:</strong> <span id="historyRef"></span></p>
+    <p>
+      <a id="downloadLink" href="#" target="_blank">Download File</a>
+    </p>
+  </div>
+
+  <div id="error" style="color: red;"></div>
+
+  <script src="/document.js"></script>
+</body>
+</html>
