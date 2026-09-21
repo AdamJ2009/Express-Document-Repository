@@ -56,14 +56,14 @@ async function handleEditSubmit(e: Event, docId: number): Promise<void> {
   }
 
   const formData = new FormData();
-  const fileInput = document.getElementById('documentFile') as HTMLInputElement;
+  //const fileInput = document.getElementById('documentFile') as HTMLInputElement;
   const fileName = (document.getElementById('fileName') as HTMLInputElement).value.trim();
   const importanceFlag = (document.getElementById('importanceFlag') as HTMLSelectElement).value;
   const accessFlag = (document.getElementById('accessFlag') as HTMLInputElement).value;
 
-  if (fileInput.files && fileInput.files[0]) {
-    formData.append('documentFile', fileInput.files[0]);
-  }
+  //if (fileInput.files && fileInput.files[0]) {
+    //formData.append('documentFile', fileInput.files[0]);
+  //}
 
   formData.append('fileName', fileName);
   formData.append('importanceFlag', importanceFlag);

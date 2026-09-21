@@ -41,13 +41,9 @@ async function handleEditSubmit(e, docId) {
         statusDiv.textContent = 'Saving changes...';
     }
     const formData = new FormData();
-    const fileInput = document.getElementById('documentFile');
     const fileName = document.getElementById('fileName').value.trim();
     const importanceFlag = document.getElementById('importanceFlag').value;
     const accessFlag = document.getElementById('accessFlag').value;
-    if (fileInput.files && fileInput.files[0]) {
-        formData.append('documentFile', fileInput.files[0]);
-    }
     formData.append('fileName', fileName);
     formData.append('importanceFlag', importanceFlag);
     formData.append('accessFlag', accessFlag);
