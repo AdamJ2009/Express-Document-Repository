@@ -66,11 +66,62 @@ export const getAllDocuments = (): Promise<DocumentRecord[]> => {
  */
 export const getDocumentById = (id: number): Promise<DocumentRecord | null> => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM documents WHERE id = ? AND archive_flag = 0`;
+    const sql = `SELECT * FROM documents WHERE id = ?`;
 
     db.get(sql, [id], (err: Error | null, row: DocumentRecord) => {
       if (err) return reject(err);
       resolve(row || null);
+    });
+  });
+};
+
+export const archiveDocument = (id: number): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE documents 
+      SET archive_flag = 1, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `;
+
+    db.run(sql, [id], function (this: RunResult, err: Error | null) {
+      if (err) {
+        reject(err);
+      } else if (this.changes === 0) {
+        reject(new Error('Document not found'));
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const getAllArchive = (): Promise<DocumentRecord[]> => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM documents WHERE archive_flag = 1`;
+
+    db.all(sql, [], (err: Error | null, rows: DocumentRecord[]) => {
+      if (err) return reject(err);
+      resolve(rows);
+    });
+  });
+};
+
+export const restoreDocument = (id: number): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE documents 
+      SET archive_flag = 0, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `;
+
+    db.run(sql, [id], function (this: RunResult, err: Error | null) {
+      if (err) {
+        reject(err);
+      } else if (this.changes === 0) {
+        reject(new Error('Archived document not found'));
+      } else {
+        resolve();
+      }
     });
   });
 };

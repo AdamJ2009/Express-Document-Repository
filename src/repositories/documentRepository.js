@@ -47,11 +47,61 @@ export const getAllDocuments = () => {
  */
 export const getDocumentById = (id) => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT * FROM documents WHERE id = ? AND archive_flag = 0`;
+        const sql = `SELECT * FROM documents WHERE id = ?`;
         db.get(sql, [id], (err, row) => {
             if (err)
                 return reject(err);
             resolve(row || null);
+        });
+    });
+};
+export const archiveDocument = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = `
+      UPDATE documents 
+      SET archive_flag = 1, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `;
+        db.run(sql, [id], function (err) {
+            if (err) {
+                reject(err);
+            }
+            else if (this.changes === 0) {
+                reject(new Error('Document not found'));
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+};
+export const getAllArchive = () => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM documents WHERE archive_flag = 1`;
+        db.all(sql, [], (err, rows) => {
+            if (err)
+                return reject(err);
+            resolve(rows);
+        });
+    });
+};
+export const restoreDocument = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = `
+      UPDATE documents 
+      SET archive_flag = 0, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `;
+        db.run(sql, [id], function (err) {
+            if (err) {
+                reject(err);
+            }
+            else if (this.changes === 0) {
+                reject(new Error('Archived document not found'));
+            }
+            else {
+                resolve();
+            }
         });
     });
 };

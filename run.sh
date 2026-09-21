@@ -20,6 +20,7 @@ FRONTEND_FILES=(
   "src/client/document.ts"
   "src/client/index.ts"
   "src/client/new.ts"
+  "src/client/archive.ts"
 )
 
 echo "Compiling backend files..."

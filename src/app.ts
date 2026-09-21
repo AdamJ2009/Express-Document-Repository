@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import { initDb } from './db.js';
-import { createDocument, getAllDocuments, getDocumentById } from './repositories/documentRepository.js';
+import { createDocument, getAllDocuments, getDocumentById,archiveDocument,getAllArchive,restoreDocument} from './repositories/documentRepository.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -73,6 +73,9 @@ app.get('/document/:id/file', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/archive', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/archive.html')); // Adjust relative path to public folder if needed
+});
 
 // --- API Endpoints ---
 
@@ -96,6 +99,32 @@ app.get('/api/documents/:id', async (req: Request, res: Response) => {
     res.json(doc);
   } catch (err) {
     res.status(500).json({ error: 'Failed to retrieve document details' });
+  }
+});
+
+app.patch('/api/documents/:id', async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid document ID' });
+  }
+
+  try {
+    await archiveDocument(id);
+    return res.status(200).json({ message: 'Document archived successfully' });
+  } catch (error) {
+    console.error('Error archiving document:', error);
+    return res.status(500).json({ error: 'Failed to archive document' });
+  }
+});
+
+app.get('/api/archive', async (_req: Request, res: Response) => {
+  try {
+    const archivedDocs = await getAllArchive();
+    return res.status(200).json(archivedDocs);
+  } catch (error) {
+    console.error('Error fetching archive:', error);
+    return res.status(500).json({ error: 'Failed to fetch archived documents' });
   }
 });
 
@@ -140,4 +169,20 @@ async function startServer() {
     console.log(`Server listening at http://localhost:${port}`);
   });
 }
+
+app.patch('/api/archive/:id/restore', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid document ID' });
+  }
+
+  try {
+    await restoreDocument(id);
+    return res.status(200).json({ message: 'Document restored successfully' });
+  } catch (error) {
+    console.error('Error restoring document:', error);
+    return res.status(500).json({ error: 'Failed to restore document' });
+  }
+});
 startServer().catch(console.error);
