@@ -12,7 +12,6 @@ async function loadDocumentDetails() {
         return;
     }
     try {
-        // Note: If archived documents fail here, ensure your backend GET route permits fetching archived docs
         const response = await fetch(`/api/documents/${docId}`);
         if (!response.ok) {
             throw new Error('Document not found');
@@ -31,11 +30,8 @@ async function loadDocumentDetails() {
         if (downloadLink) {
             downloadLink.href = `/document/${doc.id}/file`;
         }
-        // Configure action button dynamically
-        const actionBtn = document.getElementById('actionBtn');
-        if (actionBtn) {
-            setupActionButton(doc, actionBtn);
-        }
+        // Configure Edit & Action Buttons
+        setupActionButtons(doc);
         if (loadingDiv)
             loadingDiv.style.display = 'none';
         if (detailsDiv)
@@ -48,21 +44,35 @@ async function loadDocumentDetails() {
             errorDiv.textContent = 'Failed to load document details.';
     }
 }
-function setupActionButton(doc, button) {
-    // Clone button to strip existing event listeners if function is called again
-    const newButton = button.cloneNode(true);
-    button.parentNode?.replaceChild(newButton, button);
+function setupActionButtons(doc) {
+    const editBtn = document.getElementById('editBtn');
+    const actionBtn = document.getElementById('actionBtn');
+    if (!actionBtn)
+        return;
+    // Clone actionBtn to clear old event listeners
+    const newActionBtn = actionBtn.cloneNode(true);
+    actionBtn.parentNode?.replaceChild(newActionBtn, actionBtn);
     if (doc.archive_flag === 1) {
-        // Document is archived -> Show Restore option
-        newButton.textContent = 'Restore Document';
-        newButton.style.backgroundColor = '#5cb85c'; // Green
-        newButton.addEventListener('click', () => handleToggleArchive(doc.id, false));
+        // --- ARCHIVED STATE ---
+        // Hide Edit Button
+        if (editBtn)
+            editBtn.style.display = 'none';
+        // Show Restore Option
+        newActionBtn.textContent = 'Restore Document';
+        newActionBtn.style.backgroundColor = '#5cb85c'; // Green
+        newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, false));
     }
     else {
-        // Document is active -> Show Delete (Archive) option
-        newButton.textContent = 'Delete (Archive)';
-        newButton.style.backgroundColor = '#d9534f'; // Red
-        newButton.addEventListener('click', () => handleToggleArchive(doc.id, true));
+        // --- ACTIVE STATE ---
+        // Show & configure Edit Button
+        if (editBtn) {
+            editBtn.style.display = 'inline-block';
+            editBtn.href = `/document/${doc.id}/edit`;
+        }
+        // Show Delete (Archive) Option
+        newActionBtn.textContent = 'Delete (Archive)';
+        newActionBtn.style.backgroundColor = '#d9534f'; // Red
+        newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, true));
     }
 }
 async function handleToggleArchive(docId, shouldArchive) {
@@ -85,7 +95,7 @@ async function handleToggleArchive(docId, shouldArchive) {
         if (!response.ok) {
             throw new Error(`Failed to ${actionText} document.`);
         }
-        // Refresh page details after successful toggle
+        // Refresh UI state
         await loadDocumentDetails();
     }
     catch (err) {

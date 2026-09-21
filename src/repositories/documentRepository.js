@@ -34,7 +34,7 @@ export const createDocument = (doc) => {
  */
 export const getAllDocuments = () => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT * FROM documents WHERE archive_flag = 0`;
+        const sql = `SELECT * FROM documents WHERE archive_flag = 0 ORDER BY importance_flag DESC`;
         db.all(sql, [], (err, rows) => {
             if (err)
                 return reject(err);
@@ -98,6 +98,59 @@ export const restoreDocument = (id) => {
             }
             else if (this.changes === 0) {
                 reject(new Error('Archived document not found'));
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+};
+/**
+ * Update document metadata and optionally replace the file reference
+ */
+export const updateDocument = (id, data) => {
+    return new Promise((resolve, reject) => {
+        let sql;
+        let params;
+        if (data.file_reference && data.history_reference) {
+            // New file uploaded -> Update file pointers too
+            sql = `
+        UPDATE documents 
+        SET file_name = ?, 
+            importance_flag = ?, 
+            access_flag = ?, 
+            file_reference = ?, 
+            history_reference = ?, 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = ? AND archive_flag = 0
+      `;
+            params = [
+                data.file_name,
+                data.importance_flag,
+                data.access_flag,
+                data.file_reference,
+                data.history_reference,
+                id,
+            ];
+        }
+        else {
+            // No file change -> Metadata update only
+            sql = `
+        UPDATE documents 
+        SET file_name = ?, 
+            importance_flag = ?, 
+            access_flag = ?, 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = ? AND archive_flag = 0
+      `;
+            params = [data.file_name, data.importance_flag, data.access_flag, id];
+        }
+        db.run(sql, params, function (err) {
+            if (err) {
+                reject(err);
+            }
+            else if (this.changes === 0) {
+                reject(new Error('Document not found or is archived'));
             }
             else {
                 resolve();

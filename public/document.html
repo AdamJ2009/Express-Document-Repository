@@ -23,14 +23,22 @@
       <a id="downloadLink" href="#" target="_blank">Download File</a>
     </p>
 
-    <!-- Dynamic Action Button (Archive or Restore) -->
-    <button id="actionBtn" style="border: none; padding: 8px 16px; cursor: pointer; color: white;">
-      Loading...
-    </button>
+    <!-- Action Buttons Container -->
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+      <!-- Edit Button (Only visible when NOT archived) -->
+      <a id="editBtn" href="#" style="background-color: #0275d8; color: white; border: none; padding: 8px 16px; text-decoration: none; display: inline-block; cursor: pointer;">
+        Edit
+      </a>
+
+      <!-- Dynamic Action Button (Archive or Restore) -->
+      <button id="actionBtn" style="border: none; padding: 8px 16px; cursor: pointer; color: white;">
+        Loading...
+      </button>
+    </div>
   </div>
 
   <div id="error" style="color: red;"></div>
 
-  <script src="/document.js"></script>
+  <script src="/javascripts/document.js"></script>
 </body>
 </html>

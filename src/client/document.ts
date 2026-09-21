@@ -25,7 +25,6 @@ async function loadDocumentDetails(): Promise<void> {
   }
 
   try {
-    // Note: If archived documents fail here, ensure your backend GET route permits fetching archived docs
     const response = await fetch(`/api/documents/${docId}`);
     
     if (!response.ok) {
@@ -49,11 +48,8 @@ async function loadDocumentDetails(): Promise<void> {
       downloadLink.href = `/document/${doc.id}/file`;
     }
 
-    // Configure action button dynamically
-    const actionBtn = document.getElementById('actionBtn') as HTMLButtonElement | null;
-    if (actionBtn) {
-      setupActionButton(doc, actionBtn);
-    }
+    // Configure Edit & Action Buttons
+    setupActionButtons(doc);
 
     if (loadingDiv) loadingDiv.style.display = 'none';
     if (detailsDiv) detailsDiv.style.display = 'block';
@@ -63,21 +59,37 @@ async function loadDocumentDetails(): Promise<void> {
   }
 }
 
-function setupActionButton(doc: FullDocumentRecord, button: HTMLButtonElement): void {
-  // Clone button to strip existing event listeners if function is called again
-  const newButton = button.cloneNode(true) as HTMLButtonElement;
-  button.parentNode?.replaceChild(newButton, button);
+function setupActionButtons(doc: FullDocumentRecord): void {
+  const editBtn = document.getElementById('editBtn') as HTMLAnchorElement | null;
+  const actionBtn = document.getElementById('actionBtn') as HTMLButtonElement | null;
+
+  if (!actionBtn) return;
+
+  // Clone actionBtn to clear old event listeners
+  const newActionBtn = actionBtn.cloneNode(true) as HTMLButtonElement;
+  actionBtn.parentNode?.replaceChild(newActionBtn, actionBtn);
 
   if (doc.archive_flag === 1) {
-    // Document is archived -> Show Restore option
-    newButton.textContent = 'Restore Document';
-    newButton.style.backgroundColor = '#5cb85c'; // Green
-    newButton.addEventListener('click', () => handleToggleArchive(doc.id, false));
+    // --- ARCHIVED STATE ---
+    // Hide Edit Button
+    if (editBtn) editBtn.style.display = 'none';
+
+    // Show Restore Option
+    newActionBtn.textContent = 'Restore Document';
+    newActionBtn.style.backgroundColor = '#5cb85c'; // Green
+    newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, false));
   } else {
-    // Document is active -> Show Delete (Archive) option
-    newButton.textContent = 'Delete (Archive)';
-    newButton.style.backgroundColor = '#d9534f'; // Red
-    newButton.addEventListener('click', () => handleToggleArchive(doc.id, true));
+    // --- ACTIVE STATE ---
+    // Show & configure Edit Button
+    if (editBtn) {
+      editBtn.style.display = 'inline-block';
+      editBtn.href = `/document/${doc.id}/edit`;
+    }
+
+    // Show Delete (Archive) Option
+    newActionBtn.textContent = 'Delete (Archive)';
+    newActionBtn.style.backgroundColor = '#d9534f'; // Red
+    newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, true));
   }
 }
 
@@ -104,7 +116,7 @@ async function handleToggleArchive(docId: number, shouldArchive: boolean): Promi
       throw new Error(`Failed to ${actionText} document.`);
     }
 
-    // Refresh page details after successful toggle
+    // Refresh UI state
     await loadDocumentDetails();
   } catch (err) {
     if (errorDiv) {

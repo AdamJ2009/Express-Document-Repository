@@ -2,42 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document Repository -Edit Document</title>
+  <title>Document Repository - Edit Document</title>
 </head>
 <body>
-  <a href="/" class="back-link">&larr; Back to Document List</a>
+  <a id="backLink" href="/" class="back-link">&larr; Back to Document Details</a>
   <h2>Edit Document</h2>
 
-  <form id="uploadForm">
-
+  <form id="editForm" enctype="multipart/form-data">
     <div class="form-group">
-      <label for="documentFile">Select File:</label>
-      <input type="file" id="documentFile" required />
+      <label for="documentFile">Replace File (Optional):</label>
+      <input type="file" id="documentFile" name="documentFile" />
+      <small style="display: block; color: #666; margin-top: 4px;">Leave blank to keep current file.</small>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="margin-top: 15px;">
       <label for="fileName">Custom File Name:</label>
-      <input type="text" id="fileName" name="fileName" placeholder="Enter custom file name (optional)" />
+      <input type="text" id="fileName" name="fileName" required />
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="margin-top: 15px;">
       <label for="importanceFlag">Importance Status:</label>
-      <select id="importanceFlag">
+      <select id="importanceFlag" name="importanceFlag">
         <option value="0">Not Important</option>
         <option value="1">Important</option>
       </select>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="margin-top: 15px;">
       <label for="accessFlag">Access Level (0-2):</label>
-      <input type="number" id="accessFlag" min="0" max="2" value="0" required />
+      <input type="number" id="accessFlag" name="accessFlag" min="0" max="2" required />
     </div>
 
-    <button type="submit">Upload Document</button>
+    <button type="submit" style="margin-top: 20px;">Save Changes</button>
   </form>
 
-  <div id="status"></div>
+  <div id="status" style="margin-top: 15px;"></div>
 
-  <script src="/new.js"></script>
+  <script src="javascripts/edit.js"></script>
 </body>
 </html>

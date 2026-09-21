@@ -21,6 +21,7 @@ FRONTEND_FILES=(
   "src/client/index.ts"
   "src/client/new.ts"
   "src/client/archive.ts"
+  "src/client/edit.ts"
 )
 
 echo "Compiling backend files..."
@@ -32,7 +33,7 @@ done
 echo "Compiling frontend files to public/..."
 for FILE in "${FRONTEND_FILES[@]}"; do
   echo "  -> $FILE"
-  npx tsc $TSC_FLAGS --outDir public "$FILE"
+  npx tsc $TSC_FLAGS --outDir public/javascripts "$FILE"
 done
 
 echo "✅ All files compiled successfully!"
