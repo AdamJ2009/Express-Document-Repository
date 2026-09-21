@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Document Details</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
   <a href="/" class="back-link">&larr; Back to Document List</a>
@@ -11,10 +12,8 @@
   <div id="loading">Loading document details...</div>
 
   <div id="documentDetails" style="display: none;">
-    <p><strong>ID:</strong> <span id="docId"></span></p>
     <p><strong>File Name:</strong> <span id="fileName"></span></p>
     <p><strong>Importance:</strong> <span id="importanceFlag"></span></p>
-    <p><strong>Archive Status:</strong> <span id="archiveFlag"></span></p>
     <p><strong>Access Level:</strong> <span id="accessFlag"></span></p>
     <p><strong>Created At:</strong> <span id="createdAt"></span></p>
     <p><strong>Updated At:</strong> <span id="updatedAt"></span></p>
@@ -24,20 +23,20 @@
     </p>
 
     <!-- Action Buttons Container -->
-    <div style="display: flex; gap: 10px; margin-top: 15px;">
+    <div>
       <!-- Edit Button (Only visible when NOT archived) -->
-      <a id="editBtn" href="#" style="background-color: #0275d8; color: white; border: none; padding: 8px 16px; text-decoration: none; display: inline-block; cursor: pointer;">
+      <a id="editBtn" href="#" class="btn btn-detail">
         Edit
       </a>
 
       <!-- Dynamic Action Button (Archive or Restore) -->
-      <button id="actionBtn" style="border: none; padding: 8px 16px; cursor: pointer; color: white;">
+      <button id="actionBtn">
         Loading...
       </button>
     </div>
   </div>
 
-  <div id="error" style="color: red;"></div>
+  <div id="error"></div>
 
   <script src="/javascripts/document.js"></script>
 </body>

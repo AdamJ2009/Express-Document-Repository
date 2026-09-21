@@ -47,7 +47,7 @@ export const getAllDocuments = () => {
  */
 export const getDocumentById = (id) => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT * FROM documents WHERE id = ?`;
+        const sql = `SELECT * FROM documents WHERE id = ? AND archive_flag = 0`;
         db.get(sql, [id], (err, row) => {
             if (err)
                 return reject(err);

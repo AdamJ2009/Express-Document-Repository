@@ -66,7 +66,7 @@ export const getAllDocuments = (): Promise<DocumentRecord[]> => {
  */
 export const getDocumentById = (id: number): Promise<DocumentRecord | null> => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM documents WHERE id = ?`;
+    const sql = `SELECT * FROM documents WHERE id = ? AND archive_flag = 0`;
 
     db.get(sql, [id], (err: Error | null, row: DocumentRecord) => {
       if (err) return reject(err);

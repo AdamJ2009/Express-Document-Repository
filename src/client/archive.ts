@@ -25,7 +25,7 @@ async function fetchArchivedDocuments(): Promise<void> {
     tbody.innerHTML = documents.map(doc => `
       <tr id="doc-row-${doc.id}">
         <td>
-          <a href="/document/${doc.id}">${doc.file_name}</a>
+          ${doc.file_name}
         </td>
         <td>${doc.updated_at ? new Date(doc.updated_at).toLocaleString() : 'N/A'}</td>
         <td>

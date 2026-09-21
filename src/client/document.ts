@@ -26,7 +26,7 @@ async function loadDocumentDetails(): Promise<void> {
 
   try {
     const response = await fetch(`/api/documents/${docId}`);
-    
+
     if (!response.ok) {
       throw new Error('Document not found');
     }
@@ -34,10 +34,14 @@ async function loadDocumentDetails(): Promise<void> {
     const doc: FullDocumentRecord = await response.json();
 
     // Populate UI fields
-    document.getElementById('docId')!.textContent = doc.id.toString();
     document.getElementById('fileName')!.textContent = doc.file_name;
-    document.getElementById('importanceFlag')!.textContent = doc.importance_flag === 1 ? 'Important' : 'Not Important';
-    document.getElementById('archiveFlag')!.textContent = doc.archive_flag === 1 ? 'Archived' : 'Active';
+
+    // Apply CSS Badges for importance & access flags
+    const importanceEl = document.getElementById('importanceFlag')!;
+    const isImportant = doc.importance_flag === 1;
+    importanceEl.textContent = isImportant ? 'Important' : 'Standard';
+    importanceEl.className = `badge ${isImportant ? 'badge-high' : 'badge-low'}`;
+
     document.getElementById('accessFlag')!.textContent = doc.access_flag.toString();
     document.getElementById('createdAt')!.textContent = new Date(doc.created_at).toLocaleString();
     document.getElementById('updatedAt')!.textContent = new Date(doc.updated_at).toLocaleString();
@@ -48,7 +52,7 @@ async function loadDocumentDetails(): Promise<void> {
       downloadLink.href = `/document/${doc.id}/file`;
     }
 
-    // Configure Edit & Action Buttons
+    // Configure Edit & Action Buttons using CSS classes
     setupActionButtons(doc);
 
     if (loadingDiv) loadingDiv.style.display = 'none';
@@ -71,24 +75,24 @@ function setupActionButtons(doc: FullDocumentRecord): void {
 
   if (doc.archive_flag === 1) {
     // --- ARCHIVED STATE ---
-    // Hide Edit Button
     if (editBtn) editBtn.style.display = 'none';
 
-    // Show Restore Option
     newActionBtn.textContent = 'Restore Document';
-    newActionBtn.style.backgroundColor = '#5cb85c'; // Green
+    // Clear inline styles and apply stylesheet classes
+    newActionBtn.removeAttribute('style');
+    newActionBtn.className = 'btn-detail btn-restore';
     newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, false));
   } else {
     // --- ACTIVE STATE ---
-    // Show & configure Edit Button
     if (editBtn) {
-      editBtn.style.display = 'inline-block';
+      editBtn.style.display = 'inline-flex';
       editBtn.href = `/document/${doc.id}/edit`;
     }
 
-    // Show Delete (Archive) Option
     newActionBtn.textContent = 'Delete (Archive)';
-    newActionBtn.style.backgroundColor = '#d9534f'; // Red
+    // Clear inline styles and apply stylesheet classes
+    newActionBtn.removeAttribute('style');
+    newActionBtn.className = 'btn-detail btn-archive';
     newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, true));
   }
 }
@@ -101,8 +105,8 @@ async function handleToggleArchive(docId: number, shouldArchive: boolean): Promi
   const confirmAction = confirm(`Are you sure you want to ${actionText} this document?`);
   if (!confirmAction) return;
 
-  const endpoint = shouldArchive 
-    ? `/api/documents/${docId}` 
+  const endpoint = shouldArchive
+    ? `/api/documents/${docId}`
     : `/api/archive/${docId}/restore`;
 
   try {
@@ -116,8 +120,11 @@ async function handleToggleArchive(docId: number, shouldArchive: boolean): Promi
       throw new Error(`Failed to ${actionText} document.`);
     }
 
-    // Refresh UI state
-    await loadDocumentDetails();
+    // Delay redirect for 1.5 seconds after a successful archive/restore
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1500);
+
   } catch (err) {
     if (errorDiv) {
       errorDiv.textContent = err instanceof Error ? err.message : `An error occurred while trying to ${actionText}.`;
