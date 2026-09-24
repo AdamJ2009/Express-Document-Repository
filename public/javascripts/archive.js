@@ -15,7 +15,7 @@ async function fetchArchivedDocuments() {
         tbody.innerHTML = documents.map(doc => `
       <tr id="doc-row-${doc.id}">
         <td>
-          ${doc.file_name}
+          <a href="/document/${doc.id}">${doc.file_name}</a>
         </td>
         <td>${doc.updated_at ? new Date(doc.updated_at).toLocaleString() : 'N/A'}</td>
         <td>

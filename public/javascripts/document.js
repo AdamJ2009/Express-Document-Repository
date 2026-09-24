@@ -82,9 +82,9 @@ function setupActionButtons(doc) {
         e.preventDefault();
         // 1. VISUAL PROOF: Instantly turns green and changes text on physical click
         const originalText = newActionBtn.textContent;
-        newActionBtn.style.backgroundColor = '#ff0000'; // Green feedback
+        newActionBtn.style.backgroundColor = '#666666'; // Green feedback
         newActionBtn.style.color = '#ffffff';
-        newActionBtn.textContent = 'Deleting, please wait';
+        newActionBtn.textContent = 'Please Wait';
         // 2. CONSOLE PROOF: Outputs detailed event object & status
         console.log('[PROOF] Button Click Event Registered:', {
             timestamp: new Date().toISOString(),

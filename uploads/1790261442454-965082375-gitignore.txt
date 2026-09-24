@@ -1,0 +1,42 @@
+# Bundler & Dependencies
+/.bundle/
+/vendor/bundle/
+/gemfiles/vendor/
+
+# Build & Packaging Artifacts
+/*.gem
+/pkg/
+/doc/
+/rdoc/
+/.yardoc/
+/_yardoc/
+
+# Databases & Local Environment Configs
+*.sqlite3
+*.sqlite3-journal
+*.db
+.env
+.env.local
+.env.*.local
+
+# Testing & Code Quality Tools
+/coverage/
+/spec/reports/
+/.rspec_status
+/.rubocop_cache/
+
+# System & Editor Specific Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs / Editors
+/.vscode/
+/.idea/
+*.swp
+*.swo
+*~
