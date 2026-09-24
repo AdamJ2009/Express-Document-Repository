@@ -9,7 +9,7 @@ async function fetchArchivedDocuments() {
         }
         const documents = await response.json();
         if (documents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">No documents archived yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4">No documents archived yet.</td></tr>';
             return;
         }
         tbody.innerHTML = documents.map(doc => `
@@ -21,17 +21,21 @@ async function fetchArchivedDocuments() {
         <td>
           <button onclick="restoreDocument(${doc.id})">Restore</button>
         </td>
+        <td>
+          ${doc.history_reference ? `<a href="${doc.history_reference}">View History</a>` : 'N/A'}
+        </td>
       </tr>
     `).join('');
     }
     catch (err) {
-        tbody.innerHTML = '<tr><td colspan="3" style="color:red;">Failed to load archived documents.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="color:red;">Failed to load archived documents.</td></tr>';
     }
 }
 async function restoreDocument(id) {
     const confirmRestore = confirm('Are you sure you want to restore this document to active status?');
     if (!confirmRestore)
         return;
+    console.log("Restoring");
     try {
         const response = await fetch(`/api/archive/${id}/restore`, {
             method: 'PATCH',
@@ -40,7 +44,7 @@ async function restoreDocument(id) {
             }
         });
         if (!response.ok) {
-            throw new Error('Failed to restore document');
+            throw new Error('Failed to restore document AAAA');
         }
         // Remove row from table upon successful restore
         const row = document.getElementById(`doc-row-${id}`);
@@ -50,7 +54,7 @@ async function restoreDocument(id) {
         // Display empty state if last row was removed
         const tbody = document.getElementById('documentsTableBody');
         if (tbody && tbody.children.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">No documents archived yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4">No documents archived yet.</td></tr>';
         }
         alert('Document restored successfully!');
     }

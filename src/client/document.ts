@@ -52,6 +52,11 @@ async function loadDocumentDetails(): Promise<void> {
       downloadLink.href = `/document/${doc.id}/file`;
     }
 
+    const historyLink = document.getElementById('historyLink') as HTMLAnchorElement;
+    if (historyLink && doc.history_reference) {
+      historyLink.href = `/${doc.history_reference}`;
+    }
+
     // Configure Edit & Action Buttons using CSS classes
     setupActionButtons(doc);
 
@@ -67,34 +72,66 @@ function setupActionButtons(doc: FullDocumentRecord): void {
   const editBtn = document.getElementById('editBtn') as HTMLAnchorElement | null;
   const actionBtn = document.getElementById('actionBtn') as HTMLButtonElement | null;
 
-  if (!actionBtn) return;
+  if (!actionBtn) {
+    console.error('PROOF ERROR: #actionBtn not found in DOM.');
+    return;
+  }
 
-  // Clone actionBtn to clear old event listeners
+  // Clone element to reset prior listeners
   const newActionBtn = actionBtn.cloneNode(true) as HTMLButtonElement;
-  actionBtn.parentNode?.replaceChild(newActionBtn, actionBtn);
+  newActionBtn.type = 'button';
 
-  if (doc.archive_flag === 1) {
-    // --- ARCHIVED STATE ---
+  const isArchived = doc.archive_flag === 1;
+  const targetArchiveState = !isArchived; // true to archive, false to restore
+
+  // Set visual text & class based on document state
+  if (isArchived) {
     if (editBtn) editBtn.style.display = 'none';
-
     newActionBtn.textContent = 'Restore Document';
-    // Clear inline styles and apply stylesheet classes
-    newActionBtn.removeAttribute('style');
     newActionBtn.className = 'btn-detail btn-restore';
-    newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, false));
   } else {
-    // --- ACTIVE STATE ---
     if (editBtn) {
       editBtn.style.display = 'inline-flex';
       editBtn.href = `/document/${doc.id}/edit`;
     }
-
     newActionBtn.textContent = 'Delete (Archive)';
-    // Clear inline styles and apply stylesheet classes
-    newActionBtn.removeAttribute('style');
     newActionBtn.className = 'btn-detail btn-archive';
-    newActionBtn.addEventListener('click', () => handleToggleArchive(doc.id, true));
   }
+
+  // --- SINGLE CLICK HANDLER WITH PROOF ---
+  newActionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // 1. VISUAL PROOF: Instantly turns green and changes text on physical click
+    const originalText = newActionBtn.textContent;
+    newActionBtn.style.backgroundColor = '#ff0000'; // Green feedback
+    newActionBtn.style.color = '#ffffff';
+    newActionBtn.textContent = 'Deleting, please wait';
+
+    // 2. CONSOLE PROOF: Outputs detailed event object & status
+    console.log('[PROOF] Button Click Event Registered:', {
+      timestamp: new Date().toISOString(),
+      documentId: doc.id,
+      action: targetArchiveState ? 'Archive' : 'Restore',
+      eventTarget: e.target
+    });
+
+    // 3. ALERT PROOF: Native modal window confirmation
+    // (Uncomment line below if you want an explicit popup block)
+    // alert(`Click verified for Document ID: ${doc.id}`);
+
+    // Call your actual handler
+    try {
+      handleToggleArchive(doc.id, targetArchiveState);
+    } catch (err) {
+      console.error('[PROOF ERROR] handleToggleArchive threw an exception:', err);
+      newActionBtn.textContent = originalText;
+      newActionBtn.style.backgroundColor = '#ef4444'; // Red error feedback
+    }
+  });
+
+  // Replace node in DOM
+  actionBtn.parentNode?.replaceChild(newActionBtn, actionBtn);
 }
 
 async function handleToggleArchive(docId: number, shouldArchive: boolean): Promise<void> {
@@ -106,24 +143,22 @@ async function handleToggleArchive(docId: number, shouldArchive: boolean): Promi
   if (!confirmAction) return;
 
   const endpoint = shouldArchive
-    ? `/api/documents/${docId}`
+    ? `/api/documents/${docId}/archive`
     : `/api/archive/${docId}/restore`;
 
   try {
     const response = await fetch(endpoint, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: shouldArchive ? JSON.stringify({ archive_flag: 1 }) : undefined
+      headers: { 'Content-Type': 'application/json' }
     });
 
     if (!response.ok) {
       throw new Error(`Failed to ${actionText} document.`);
     }
 
-    // Delay redirect for 1.5 seconds after a successful archive/restore
     setTimeout(() => {
-      window.location.href = '/';
-    }, 1500);
+      window.location.href = shouldArchive ? '/archive' : '/';
+    }, 1000);
 
   } catch (err) {
     if (errorDiv) {

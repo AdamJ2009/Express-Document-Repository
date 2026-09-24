@@ -52,7 +52,7 @@ export const createDocument = (doc: Omit<DocumentRecord, 'id' | 'created_at' | '
  */
 export const getAllDocuments = (): Promise<DocumentRecord[]> => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM documents WHERE archive_flag = 0 ORDER BY importance_flag DESC`;
+    const sql = `SELECT * FROM documents WHERE archive_flag = 0 ORDER BY importance_flag DESC, created_at ASC`;
 
     db.all(sql, [], (err: Error | null, rows: DocumentRecord[]) => {
       if (err) return reject(err);
@@ -66,7 +66,7 @@ export const getAllDocuments = (): Promise<DocumentRecord[]> => {
  */
 export const getDocumentById = (id: number): Promise<DocumentRecord | null> => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM documents WHERE id = ? AND archive_flag = 0`;
+    const sql = `SELECT * FROM documents WHERE id = ?`;
 
     db.get(sql, [id], (err: Error | null, row: DocumentRecord) => {
       if (err) return reject(err);
@@ -97,7 +97,7 @@ export const archiveDocument = (id: number): Promise<void> => {
 
 export const getAllArchive = (): Promise<DocumentRecord[]> => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM documents WHERE archive_flag = 1`;
+    const sql = `SELECT * FROM documents WHERE archive_flag = 1 ORDER BY updated_at ASC`;
 
     db.all(sql, [], (err: Error | null, rows: DocumentRecord[]) => {
       if (err) return reject(err);
